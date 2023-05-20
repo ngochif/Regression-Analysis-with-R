@@ -1,0 +1,83 @@
+#View the mtcars dataset
+head(mtcars)
+##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1
+
+#Use weight and then fuel consumption to predict horsepower and compare models 
+lmWT<-lm(hp~wt, data=mtcars)#use weight to predict horsepower
+lmMPG<-lm(hp~mpg, data=mtcars)#use fuel consumption to predict horsepower
+#Compare James' approach to Chris' approach using the summary statistics of the respective models
+summary(lmWT)
+## 
+## Call:
+## lm(formula = hp ~ wt, data = mtcars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -83.430 -33.596 -13.587   7.913 172.030 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   -1.821     32.325  -0.056    0.955    
+## wt            46.160      9.625   4.796 4.15e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 52.44 on 30 degrees of freedom
+## Multiple R-squared:  0.4339, Adjusted R-squared:  0.4151 
+## F-statistic:    23 on 1 and 30 DF,  p-value: 4.146e-05
+summary(lmMPG)
+## 
+## Call:
+## lm(formula = hp ~ mpg, data = mtcars)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -59.26 -28.93 -13.45  25.65 143.36 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   324.08      27.43  11.813 8.25e-13 ***
+## mpg            -8.83       1.31  -6.742 1.79e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 43.95 on 30 degrees of freedom
+## Multiple R-squared:  0.6024, Adjusted R-squared:  0.5892 
+## F-statistic: 45.46 on 1 and 30 DF,  p-value: 1.788e-07
+#From the summary of both model, it shows fuel consumption is better suited to estimate horsepower. This is because the model predicting horsepower based on fuel consumption has a higher Rsquared (0.6024) than the model that predicts based on weight(0.4339). In other words, fuel consumption predicts up to 60% of the variation in horsepower whereas weight can only explain 43%.
+
+#Build a model using number of cylinders and miles per gallon to predict horsepower 
+lmHP<-lm(hp~cyl+mpg, data=mtcars)
+summary(lmHP)
+## 
+## Call:
+## lm(formula = hp ~ cyl + mpg, data = mtcars)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -53.72 -22.18 -10.13  14.47 130.73 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)   
+## (Intercept)   54.067     86.093   0.628  0.53492   
+## cyl           23.979      7.346   3.264  0.00281 **
+## mpg           -2.775      2.177  -1.275  0.21253   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 38.22 on 29 degrees of freedom
+## Multiple R-squared:  0.7093, Adjusted R-squared:  0.6892 
+## F-statistic: 35.37 on 2 and 29 DF,  p-value: 1.663e-08
+paste("The model is hp=54.067+23.979cyl-2.775mpg")
+## [1] "The model is hp=54.067+23.979cyl-2.775mpg"
+
+#Use linear model to predict hp for cyl=4 and mpg=22 
+predHP<-predict(lmHP, data.frame(cyl=4, mpg=22 ))
+paste("The estimated horsepower of a car with 4 cylinders and mpg of 22 is", predHP)
+## [1] "The estimated horsepower of a car with 4 cylinders and mpg of 22 is 88.9361796789223"
