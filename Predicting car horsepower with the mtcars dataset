@@ -11,7 +11,7 @@ head(mtcars)
 #Use weight and then fuel consumption to predict horsepower and compare models 
 lmWT<-lm(hp~wt, data=mtcars)#use weight to predict horsepower
 lmMPG<-lm(hp~mpg, data=mtcars)#use fuel consumption to predict horsepower
-#Compare James' approach to Chris' approach using the summary statistics of the respective models
+#Compare both approaches using the summary statistics of the respective models
 summary(lmWT)
 ## 
 ## Call:
