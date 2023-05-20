@@ -1,0 +1,85 @@
+library(mlbench)
+data(BostonHousing)
+head(BostonHousing)
+##      crim zn indus chas   nox    rm  age    dis rad tax ptratio      b lstat
+## 1 0.00632 18  2.31    0 0.538 6.575 65.2 4.0900   1 296    15.3 396.90  4.98
+## 2 0.02731  0  7.07    0 0.469 6.421 78.9 4.9671   2 242    17.8 396.90  9.14
+## 3 0.02729  0  7.07    0 0.469 7.185 61.1 4.9671   2 242    17.8 392.83  4.03
+## 4 0.03237  0  2.18    0 0.458 6.998 45.8 6.0622   3 222    18.7 394.63  2.94
+## 5 0.06905  0  2.18    0 0.458 7.147 54.2 6.0622   3 222    18.7 396.90  5.33
+## 6 0.02985  0  2.18    0 0.458 6.430 58.7 6.0622   3 222    18.7 394.12  5.21
+##   medv
+## 1 24.0
+## 2 21.6
+## 3 34.7
+## 4 33.4
+## 5 36.2
+## 6 28.7
+
+
+
+#Model to estimate median value of owner-occupied homes 
+lmMEDV<-lm(medv~crim+zn+ptratio+chas, data=BostonHousing)
+summary(lmMEDV)
+## 
+## Call:
+## lm(formula = medv ~ crim + zn + ptratio + chas, data = BostonHousing)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -18.282  -4.505  -0.986   2.650  32.656 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 49.91868    3.23497  15.431  < 2e-16 ***
+## crim        -0.26018    0.04015  -6.480 2.20e-10 ***
+## zn           0.07073    0.01548   4.570 6.14e-06 ***
+## ptratio     -1.49367    0.17144  -8.712  < 2e-16 ***
+## chas1        4.58393    1.31108   3.496 0.000514 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 7.388 on 501 degrees of freedom
+## Multiple R-squared:  0.3599, Adjusted R-squared:  0.3547 
+## F-statistic: 70.41 on 4 and 501 DF,  p-value: < 2.2e-16
+paste("The model to estimate median value is medv=49.91898-0.26018crim+0.07073zn-1.49367ptratio+4.58393chas")
+## [1] "The model to estimate median value is medv=49.91898-0.26018crim+0.07073zn-1.49367ptratio+4.58393chas"
+#The model is not very accurate because R-squared is 0.3599 which is close to zero. In other words, the predictors only explains approximately 36% of the overall variability of the dependent variable they are predicting.
+
+#Determining which house is more expensive and by how much based on Chas 
+YesChas=4.58393*1*1000#Contribution of "Chas" variable when Chas=1
+NotChas=4.58393*0*1000##Contribution of "Chas" variable when Chas=1
+YesChas
+## [1] 4583.93
+NotChas
+## [1] 0
+#The median value of a house that bounds the Chas river is 4584 dollars higher than the value of a house similar in all aspects which does not bound the river.
+
+#More expensive house based on pupil-teacher ratio 
+ptratio15=15*(-1.49367)*1000#impact on median value when ptratio is 15 
+ptratio18= 18*(-1.49367)*1000#impact on median value when ptratio is 18
+difference=ptratio15-ptratio18#difference between the two levels
+ptratio15
+## [1] -22405.05
+ptratio18
+## [1] -26886.06
+difference
+## [1] 4481.01
+paste("The house with pupil-teacher ratio of 15 is 4481.01 dollars more expensive that the one with pupil-teacher ratio of 18")
+## [1] "The house with pupil-teacher ratio of 15 is 4481.01 dollars more expensive that the one with pupil-teacher ratio of 18"
+
+#Which of the variables are statistically important
+#The p-values of all the coefficients are close to zero which means that they are all statistically important. In other words, the probability that these coefficients are zero or not statistically significant are close to zero. We can therefore reject the null hypothesis of the coefficients being zero.
+
+#Using ANOVA analysis to determine the order of importance of variables 
+lm_anova<-anova(lmMEDV)#Calculate ANOVA table
+lm_anova
+## Analysis of Variance Table
+## 
+## Response: medv
+##            Df  Sum Sq Mean Sq F value    Pr(>F)    
+## crim        1  6440.8  6440.8 118.007 < 2.2e-16 ***
+## zn          1  3554.3  3554.3  65.122 5.253e-15 ***
+## ptratio     1  4709.5  4709.5  86.287 < 2.2e-16 ***
+## chas        1   667.2   667.2  12.224 0.0005137 ***
+## Residuals 501 27344.5    54.6                      
